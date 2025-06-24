@@ -129,6 +129,116 @@ print(f"부산 운전 난이도 점수: {difficulty_score_busan:.3f}")
 if comparison_available and accident_comparison_available:
     print(f"인천 운전 난이도 점수: {difficulty_score_inchun:.3f}")
 
+# 5. 시각화
+print("\n5. 시각화")
+
+# 도로 폭 분포 비교
+if comparison_available:
+    fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+    fig.suptitle('부산 vs 인천 도로 폭 분포 비교', fontsize=16)
+
+    axes[0].hist(busan_road_df['폭'].dropna(), bins=30, alpha=0.7, label='부산', color='blue')
+    axes[0].set_title('부산 도로 폭 분포')
+    axes[0].set_xlabel('도로 폭 (m)')
+    axes[0].set_ylabel('빈도')
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+
+    axes[1].hist(inchun_road_df['폭'].dropna(), bins=30, alpha=0.7, label='인천', color='red')
+    axes[1].set_title('인천 도로 폭 분포')
+    axes[1].set_xlabel('도로 폭 (m)')
+    axes[1].set_ylabel('빈도')
+    axes[1].legend()
+    axes[1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+
+    # 도로 위계별 분포
+    fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+    fig.suptitle('도로 위계별 분포', fontsize=16)
+
+    road_hierarchy_busan.plot(kind='bar', ax=axes[0], color='blue', alpha=0.7)
+    axes[0].set_title('부산 도로 위계별 분포')
+    axes[0].set_xlabel('도로 위계')
+    axes[0].set_ylabel('도로 개수')
+    axes[0].tick_params(axis='x', rotation=45)
+
+    if comparison_available:
+        road_hierarchy_inchun = inchun_road_df['도로위계'].value_counts()
+        if len(road_hierarchy_inchun) > 0:
+            road_hierarchy_inchun.plot(kind='bar', ax=axes[1], color='red', alpha=0.7)
+            axes[1].set_title('인천 도로 위계별 분포')
+            axes[1].set_xlabel('도로 위계')
+            axes[1].set_ylabel('도로 개수')
+            axes[1].tick_params(axis='x', rotation=45)
+        else:
+            axes[1].text(0.5, 0.5, '인천 도로위계 데이터 없음', ha='center', va='center', transform=axes[1].transAxes, fontsize=14)
+            axes[1].set_title('인천 도로 위계별 분포')
+    else:
+        axes[1].text(0.5, 0.5, '인천 데이터 없음', ha='center', va='center', transform=axes[1].transAxes, fontsize=14)
+        axes[1].set_title('인천 도로 위계별 분포')
+
+    plt.tight_layout()
+    plt.show()
+
+    # 운전 난이도 점수 비교
+    if comparison_available and accident_comparison_available:
+        fig, ax = plt.subplots(figsize=(10, 6))
+        cities = ['부산', '인천']
+        scores = [difficulty_score_busan, difficulty_score_inchun]
+        colors = ['blue', 'red']
+        
+        bars = ax.bar(cities, scores, color=colors, alpha=0.7)
+        ax.set_title('부산 vs 인천 운전 난이도 점수 비교', fontsize=14)
+        ax.set_ylabel('난이도 점수 (높을수록 어려움)')
+        ax.set_ylim(0, 1)
+        
+        # 막대 위에 점수 표시
+        for bar, score in zip(bars, scores):
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height + 0.01,
+                    f'{score:.3f}', ha='center', va='bottom')
+        
+        plt.grid(True, alpha=0.3)
+        plt.show()
+
+else:
+    # 부산 데이터만으로 시각화
+    fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+    fig.suptitle('부산 도로 데이터 분석', fontsize=16)
+
+    # 도로 폭 분포
+    axes[0].hist(busan_road_df['폭'].dropna(), bins=30, alpha=0.7, color='blue')
+    axes[0].set_title('부산 도로 폭 분포')
+    axes[0].set_xlabel('도로 폭 (m)')
+    axes[0].set_ylabel('빈도')
+    axes[0].grid(True, alpha=0.3)
+
+    # 도로 위계별 분포
+    road_hierarchy_busan.plot(kind='bar', ax=axes[1], color='blue', alpha=0.7)
+    axes[1].set_title('부산 도로 위계별 분포')
+    axes[1].set_xlabel('도로 위계')
+    axes[1].set_ylabel('도로 개수')
+    axes[1].tick_params(axis='x', rotation=45)
+
+    plt.tight_layout()
+    plt.show()
+
+    # 부산 운전 난이도 점수
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.bar(['부산'], [difficulty_score_busan], color='blue', alpha=0.7)
+    ax.set_title('부산 운전 난이도 점수', fontsize=14)
+    ax.set_ylabel('난이도 점수 (높을수록 어려움)')
+    ax.set_ylim(0, 1)
+    
+    # 점수 표시
+    ax.text(0, difficulty_score_busan + 0.01, f'{difficulty_score_busan:.3f}', 
+            ha='center', va='bottom', fontsize=12)
+    
+    plt.grid(True, alpha=0.3)
+    plt.show()
+
 # 6. 결론 도출
 print("\n6. 결론")
 
