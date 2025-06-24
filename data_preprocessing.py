@@ -237,7 +237,8 @@ def visualize_outliers(road_data, accident_data):
     
     plt.tight_layout()
     plt.show()
-    
+
+
     # 2. 교통사고 데이터 이상치 시각화
     print("2. 교통사고 데이터 이상치 분석")
     
